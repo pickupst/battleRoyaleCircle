@@ -17,27 +17,8 @@ class Player {
 
     this.x = 100;
     this.y = 100;
-    this.targetX = 100;
-    this.targetY = 100;
-    this.dirx = 0;
-    this.diry = 0;
-  
-    this.health = 100;
-    this.coins = 0;
-    this.bullets = 0;
-    this.medkits = 0;
   };
   
-  update = () => {
-
-    this.targetX += this.dirx * 5;
-    this.targetY += this.diry * 5;
-
-    this.x += (this.targetX - this.x) * 0.50;
-    this.y += (this.targetY - this.y) * 0.50;
-
-  };
-
   draw = () => {
     this.ctx.drawImage(
     this.game.images.user0,
@@ -46,6 +27,15 @@ class Player {
     TILE_WIDTH, TILE_HEIGHT);
   };
   
+  update = () => {
+    
+    // //Oyunun döngüsü burada olacak
+    // for (let m = 0; m < this.players.length; m++) {
+    //   const player = this.players[m];
+    //   player.update();
+    // }
+
+  };
 
 };
 
@@ -72,9 +62,7 @@ class Game {
 
     ];
 
-    this.players = [
-      new Player(ctx, this)
-    ];
+    this.players = [];
 
     }
 
@@ -140,11 +128,11 @@ class Game {
 
   update = () => {
     
-    //Oyunun döngüsü burada olacak
-    for (let m = 0; m < this.players.length; m++) {
-      const player = this.players[m];
-      player.update();
-    }
+    // //Oyunun döngüsü burada olacak
+    // for (let m = 0; m < this.players.length; m++) {
+    //   const player = this.players[m];
+    //   player.update();
+    // }
 
   };
 

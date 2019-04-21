@@ -24,11 +24,80 @@ app.set('port', port);
 var server = http.createServer(app);
 var io = socketIO(server);
 
+
+
+
+
+
+
+var Player = function (game, id) {
+    this.game = game;
+    this.id = id;
+
+    this.x = 100;
+    this.y = 100;
+    this.targetX = 100;
+    this.targetY = 100;
+    this.dirx = 0;
+    this.diry = 0;
+    this.type = 0;
+  
+    this.health = 100;
+    this.coins = 0;
+    this.bullets = 0;
+    this.medkits = 0;
+  };
+  
+  Player.prototype.update = function update() {
+
+    this.targetX += this.dirx * 5;
+    this.targetY += this.diry * 5;
+
+    this.x += (this.targetX - this.x) * 0.50;
+    this.y += (this.targetY - this.y) * 0.50;
+
+  };
+
+var Game = function Game() {
+    //Oyunu başlatacak fonksiyon
+    this.players = [];
+  }
+
+  Game.prototype.addPlayer = function addPlayer (id) {
+
+    this.players.push(new Player(this, id));
+  }
+
+  Game.prototype.update = function update () {
+    
+    //Oyunun döngüsü burada olacak
+    for (let m = 0; m < this.players.length; m++) {
+      const player = this.players[m];
+      player.update();
+    }
+  };
+
+var game = new Game();
+
 io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
+  console.log("User connected!" + socket.id);
+  
+  game.addPlayer(socket.id);
+  
+  console.log("Number of players: " + game.players.length);
+  
+  socket.on('disconnect', function () {
+    // socket.emit('disconnected');
+    game.players = game.players.filter(player => player.id ===  socket.id);
+  
+    console.log("User DİSconnected!" + socket.id);
+    console.log("Number of players: " + game.players.length);
   });
+
+  // socket.emit('news', { hello: 'world' });
+  // socket.on('my other event', function (data) {
+  //   console.log(data);
+  // });
 });
 
 /**
