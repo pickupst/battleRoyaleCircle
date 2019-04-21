@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
+import io from 'socket.io-client';
 import './App.css';
 
 
@@ -7,7 +8,6 @@ const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 512;
 const TILE_WIDTH = 64;
 const TILE_HEIGHT = 64;
-
 
 class Player {
 
@@ -219,6 +219,12 @@ class App extends Component {
 
   start = async () => {
     
+    var socket = io('http://localhost:5000');
+    socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+
     if (!this.state.isGameRunning) {
       this.game = new Game(this.getCtx());
       await this.game.init();

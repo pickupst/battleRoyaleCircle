@@ -7,6 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('battleroyalecircle:server');
 var http = require('http');
+var socketIO = require('socket.io');
+
 
 /**s
  * Get port from environment and store in Express.
@@ -20,6 +22,14 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+var io = socketIO(server);
+
+io.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
 
 /**
  * Listen on provided port, on all network interfaces.
