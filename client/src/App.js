@@ -15,8 +15,8 @@ class Player {
     this.ctx = ctx;
     this.game = game;
 
-    this.x = 0;
-    this.y = 0;
+    this.x = 100;
+    this.y = 100;
     this.dirx = 0;
     this.diry = 0;
   
@@ -28,13 +28,16 @@ class Player {
   
   update = () => {
 
+    this.x += this.dirx * 5;
+    this.y += this.diry * 5;
+
   };
 
   draw = () => {
     this.ctx.drawImage(
     this.game.images.user0,
     0, 0, TILE_WIDTH, TILE_HEIGHT, 
-    0, 0, 
+    this.x, this.y, 
     TILE_WIDTH, TILE_HEIGHT);
   };
   
@@ -81,20 +84,68 @@ class Game {
       user0: user0,
       0: tile0,
       1: tile1,
-    }
+    };
 
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('keyup', this._onKeyUp);
 
   };
 
-  update = () => {
-    //Oyunun döngüsü burada olacak
+  _onKeyDown = event => {
 
+    const keyCode = event.keyCode;
+    //37 sol
+    if (keyCode === 37) {
+      this.players[0].dirx = -1;
+    }
+    //39 Sağ
+    else if (keyCode === 39) {
+      this.players[0].dirx = 1;
+    }
+    //Yukarı
+    else if (keyCode === 38) {
+      this.players[0].diry = -1;
+    }
+    else if (keyCode === 40) {
+      this.players[0].diry = 1;
+    }
+
+  }
+
+  _onKeyUp = event => {
+
+    const keyCode = event.keyCode;
+    //37 sol
+    if (keyCode === 37) {
+      this.players[0].dirx = 0;
+    }
+    //39 Sağ
+    else if (keyCode === 39) {
+      this.players[0].dirx = 0;
+    }
+    //Yukarı
+    else if (keyCode === 38) {
+      this.players[0].diry = 0;
+    }
+    else if (keyCode === 40) {
+      this.players[0].diry = 0;
+    }
+
+  }
+
+  update = () => {
+    
+    //Oyunun döngüsü burada olacak
+    for (let m = 0; m < this.players.length; m++) {
+      const player = this.players[m];
+      player.update();
+    }
 
   };
 
   draw = () => {
     //Oyunu ekrana çizdirecek fonksiyon
-
+    
     this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     //this.users.forEach(user => user.draw());
   
@@ -164,20 +215,19 @@ class App extends Component {
   start = async () => {
     
     if (!this.state.isGameRunning) {
-  
-    this.game = new Game(this.getCtx());
-    await this.game.init();
-    this.loop();
+      this.game = new Game(this.getCtx());
+      await this.game.init();
+      this.loop();
     }
-    this.setState(state =>  ({isGameRunning: state.isGameRunning}));
+    this.setState(state =>  ({isGameRunning: !state.isGameRunning}));
   }
 
   loop = () => {
     requestAnimationFrame(() => {
       const now = Date.now();
-      if (now - this.lastLoop > (1000 / 30)) {
+      //if (now - this.lastLoop > (1000 / 30)) {
         this.game.update();
-      }
+      //}
 
       this.game.draw();
 
