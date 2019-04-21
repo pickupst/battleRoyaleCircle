@@ -9,52 +9,65 @@ const TILE_WIDTH = 64;
 const TILE_HEIGHT = 64;
 
 
-const Player = {
+class Player {
 
-  x: 0,
-  y: 0,
-  dirx: 0,
-  diry: 0,
+  constructor(ctx, game) {
+    this.ctx = ctx;
+    this.game = game;
 
-  health: 100,
-  coins: 0,
-  bullets: 0,
-  medkits: 0,
+    this.x = 0;
+    this.y = 0;
+    this.dirx = 0;
+    this.diry = 0;
+  
+    this.health = 100;
+    this.coins = 0;
+    this.bullets = 0;
+    this.medkits = 0;
+  };
+  
+  update = () => {
 
-  update: () => {
+  };
 
-  },
-  draw: () => {
-    
-  }
+  draw = () => {
+    this.ctx.drawImage(
+    this.game.images.user0,
+    0, 0, TILE_WIDTH, TILE_HEIGHT, 
+    0, 0, 
+    TILE_WIDTH, TILE_HEIGHT);
+  };
   
 
 };
 
 class Game {
-
-  images = {};
-
-  layers = [
-    [
-      1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-      1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-      1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-      1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-      1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-      1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-      1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-      1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-    ]
-
-  ];
-
-  users = [];
-
   
   constructor(ctx) {
     //Oyunu başlatacak fonksiyon
     this.ctx = ctx;
+
+    
+    this.images = {};
+
+    this.layers = [
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+      ]
+
+    ];
+
+    this.players = [
+      new Player(ctx, this)
+    ];
+
     }
 
   init = async () => {
@@ -62,8 +75,10 @@ class Game {
 
     const tile0 = await this.loadImage('./assets/layers/0.png');
     const tile1 = await this.loadImage('./assets/layers/1.png');
+    const user0 = await this.loadImage('./assets/users/0.png');
 
     this.images = {
+      user0: user0,
       0: tile0,
       1: tile1,
     }
@@ -92,7 +107,7 @@ class Game {
         for (var k = 0; k < cols; k++) {
           const imageType = layer[j * cols + k];
 
-          console.log("imageType: " + layer[j * cols + k]);
+          //console.log("imageType: " + layer[j * cols + k]);
           this.ctx.drawImage(
             this.images[imageType],
             0, 0, TILE_WIDTH, TILE_HEIGHT, 
@@ -101,8 +116,14 @@ class Game {
     
         }
       }
-    }
-    
+
+
+      for (let m = 0; m < this.players.length; m++) {
+        const player = this.players[m];
+        player.draw();
+      }
+
+  }
   };
 
   loadImage = (src) => {
