@@ -17,6 +17,8 @@ class Player {
 
     this.x = 100;
     this.y = 100;
+    this.targetX = 100;
+    this.targetY = 100;
     this.dirx = 0;
     this.diry = 0;
   
@@ -28,8 +30,11 @@ class Player {
   
   update = () => {
 
-    this.x += this.dirx * 5;
-    this.y += this.diry * 5;
+    this.targetX += this.dirx * 5;
+    this.targetY += this.diry * 5;
+
+    this.x += (this.targetX - this.x) * 0.50;
+    this.y += (this.targetY - this.y) * 0.50;
 
   };
 
