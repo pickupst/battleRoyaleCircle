@@ -15,8 +15,11 @@ class Player {
     this.ctx = ctx;
     this.game = game;
 
+    this.id = 0;
+
     this.x = 100;
     this.y = 100;
+    this.type = 0;
   };
   
   draw = () => {
@@ -41,10 +44,10 @@ class Player {
 
 class Game {
   
-  constructor(ctx) {
+  constructor(ctx, socket) {
     //Oyunu başlatacak fonksiyon
     this.ctx = ctx;
-
+    this.socket = socket;
     
     this.images = {};
 
@@ -63,6 +66,24 @@ class Game {
     ];
 
     this.players = [];
+
+    socket.on('PLAYERS_UPDATE', (players) => {
+
+      const newPlayers = [];
+
+       for (let i = 0; i < players.length; i++) {
+        
+        const newPlayer = new Player(ctx, this);
+        newPlayer.id = players[i].id;
+        newPlayer.x = players[i].x;
+        newPlayer.y = players[i].y;
+        newPlayer.type = players[i].type;
+         
+        newPlayers.push(newPlayer);
+       }
+       this.players = newPlayers;
+      // socket.emit('my other event', { my: 'data' });
+    });
 
     }
 
@@ -89,18 +110,18 @@ class Game {
     const keyCode = event.keyCode;
     //37 sol
     if (keyCode === 37) {
-      this.players[0].dirx = -1;
+      this.socket.emit("PLAYER_DIRECTION_UPDATE", {dirx: -1});
     }
     //39 Sağ
     else if (keyCode === 39) {
-      this.players[0].dirx = 1;
+      this.socket.emit("PLAYER_DIRECTION_UPDATE", {dirx: 1});
     }
     //Yukarı
     else if (keyCode === 38) {
-      this.players[0].diry = -1;
+      this.socket.emit("PLAYER_DIRECTION_UPDATE", {diry: -1});
     }
     else if (keyCode === 40) {
-      this.players[0].diry = 1;
+      this.socket.emit("PLAYER_DIRECTION_UPDATE", {diry: 1});
     }
 
   }
@@ -110,18 +131,18 @@ class Game {
     const keyCode = event.keyCode;
     //37 sol
     if (keyCode === 37) {
-      this.players[0].dirx = 0;
+      this.socket.emit("PLAYER_DIRECTION_UPDATE", {dirx: 0});
     }
     //39 Sağ
     else if (keyCode === 39) {
-      this.players[0].dirx = 0;
+      this.socket.emit("PLAYER_DIRECTION_UPDATE", {dirx: 0});
     }
     //Yukarı
     else if (keyCode === 38) {
-      this.players[0].diry = 0;
+      this.socket.emit("PLAYER_DIRECTION_UPDATE", {diry: 0});
     }
     else if (keyCode === 40) {
-      this.players[0].diry = 0;
+      this.socket.emit("PLAYER_DIRECTION_UPDATE", {diry: 0});
     }
 
   }
@@ -208,13 +229,9 @@ class App extends Component {
   start = async () => {
     
     var socket = io('http://localhost:5000');
-    socket.on('news', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
-  });
 
     if (!this.state.isGameRunning) {
-      this.game = new Game(this.getCtx());
+      this.game = new Game(this.getCtx(), socket);
       await this.game.init();
       this.loop();
     }
