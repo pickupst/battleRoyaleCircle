@@ -33,15 +33,19 @@ var io = socketIO(server);
 var Player = function (game, id) {
     this.game = game;
     this.id = id;
+    this.name = 'nonName';
 
-    this.x = 100;
-    this.y = 100;
-    this.targetX = 100;
-    this.targetY = 100;
+    this.x = Math.floor(Math.random() * 500 + 100);
+    this.y = Math.floor(Math.random() * 400 + 100);
+
+    this.targetX = this.x;
+    this.targetY = this.y;
     this.dirx = 0;
     this.diry = 0;
-    this.type = 0;
   
+
+    this.type = Math.floor(Math.random() * 4);
+    
     this.health = 100;
     this.coins = 0;
     this.bullets = 0;
@@ -89,6 +93,7 @@ game.update();
 const updateInterval = setInterval(() => {
 
   io.sockets.emit('PLAYERS_UPDATE', game.players.map(player => ({
+    name: player.name,
     id: player.id,
     x: player.x,
     y: player.y,
@@ -119,6 +124,13 @@ io.on('connection', function (socket) {
       player[0].dirx = data.dirx;
     if(data.diry !== undefined)
       player[0].diry = data.diry;
+
+   });
+
+   socket.on('PLAYER_NAME_UPDATE', function (data) {
+    const player = game.players.filter(player => player.id ===  socket.id);
+    
+    player[0].name = data.name;
 
    });
 

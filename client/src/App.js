@@ -17,17 +17,21 @@ class Player {
 
     this.id = 0;
 
-    this.x = 100;
-    this.y = 100;
-    this.type = 0;
+    this.x = Math.floor(Math.random() * CANVAS_WIDTH + 100);
+    this.y = Math.floor(Math.random() * CANVAS_HEIGHT + 100);
+    this.type = Math.floor(Math.random() * 4);
   };
   
   draw = () => {
     this.ctx.drawImage(
-    this.game.images.user0,
+    this.game.images.users[this.type],
     0, 0, TILE_WIDTH, TILE_HEIGHT, 
     this.x, this.y, 
     TILE_WIDTH, TILE_HEIGHT);
+
+    this.ctx.font = '18px serif';
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillText(this.name, this.x + 20, this.y);
   };
   
   update = () => {
@@ -49,7 +53,10 @@ class Game {
     this.ctx = ctx;
     this.socket = socket;
     
-    this.images = {};
+    this.images = {
+      tiles: {},
+      users: {}
+    };
 
     this.layers = [
       [
@@ -70,16 +77,18 @@ class Game {
     socket.on('PLAYERS_UPDATE', (players) => {
 
       const newPlayers = [];
-
+      
        for (let i = 0; i < players.length; i++) {
         
         const newPlayer = new Player(ctx, this);
         newPlayer.id = players[i].id;
+        newPlayer.name = players[i].name;
         newPlayer.x = players[i].x;
         newPlayer.y = players[i].y;
         newPlayer.type = players[i].type;
          
         newPlayers.push(newPlayer);
+        
        }
        this.players = newPlayers;
       // socket.emit('my other event', { my: 'data' });
@@ -93,11 +102,22 @@ class Game {
     const tile0 = await this.loadImage('./assets/layers/0.png');
     const tile1 = await this.loadImage('./assets/layers/1.png');
     const user0 = await this.loadImage('./assets/users/0.png');
+    const user1 = await this.loadImage('./assets/users/1.png');
+    const user2 = await this.loadImage('./assets/users/2.png');
+    const user3 = await this.loadImage('./assets/users/3.png');
 
     this.images = {
-      user0: user0,
-      0: tile0,
-      1: tile1,
+      users: {
+        0: user0,
+        1: user1,
+        2: user2,
+        3: user3,
+      },
+      
+      tiles: {
+        0: tile0,
+        1: tile1,
+      },
     };
 
     window.addEventListener('keydown', this._onKeyDown);
@@ -174,7 +194,7 @@ class Game {
 
           //console.log("imageType: " + layer[j * cols + k]);
           this.ctx.drawImage(
-            this.images[imageType],
+            this.images.tiles[imageType],
             0, 0, TILE_WIDTH, TILE_HEIGHT, 
             k * TILE_WIDTH, j * TILE_HEIGHT, 
             TILE_WIDTH, TILE_HEIGHT);
@@ -230,6 +250,9 @@ class App extends Component {
     
     var socket = io('http://localhost:5000');
 
+    socket.emit('PLAYER_NAME_UPDATE', {name: this.state.name});
+
+
     if (!this.state.isGameRunning) {
       this.game = new Game(this.getCtx(), socket);
       await this.game.init();
@@ -263,7 +286,7 @@ class App extends Component {
         
         {!this.state.isGameRunning ? (
           <div>
-            <input type = 'text' onChange = {(evt) => this.setState({name: evt.target.value})}/>
+            <input type = 'text' onChange = {(evt) => this.setState({name: evt.target.value.substring(0, 6).toLocaleLowerCase})}/>
             <button disabled = {!this.state.name} onClick ={this.start}> START! </button>
           </div>
         ) : (null)};
