@@ -259,13 +259,22 @@ class App extends Component {
 
   render() {
     return (
-      <div style = {{height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'black'}}>
-        <button onClick ={this.start}> START! </button>
+      <div style = {{height: '100%'}}>
+        
+        {!this.state.isGameRunning ? (
+          <div>
+            <input type = 'text' onChange = {(evt) => this.setState({name: evt.target.value})}/>
+            <button disabled = {!this.state.name} onClick ={this.start}> START! </button>
+          </div>
+        ) : (null)};
 
-        <canvas ref = {this.canvasRef} width = {CANVAS_WIDTH} height = {CANVAS_HEIGHT}>
+        <div style = {{height: '100%', display: this.state.isGameRunning ? 'flex' : 'none', justifyContent: 'center', alignItems: 'center', backgroundColor: 'black'}}>
+          <canvas ref = {this.canvasRef} width = {CANVAS_WIDTH} height = {CANVAS_HEIGHT}>
 
-        </canvas>
-      
+          </canvas>
+        
+        </div>
+
       </div>
     );
   }

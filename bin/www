@@ -50,8 +50,8 @@ var Player = function (game, id) {
   
   Player.prototype.update = function update() {
 
-    this.targetX += this.dirx * 5;
-    this.targetY += this.diry * 5;
+    this.targetX += this.dirx * 3;
+    this.targetY += this.diry * 3;
 
     this.x += (this.targetX - this.x) * 0.50;
     this.y += (this.targetY - this.y) * 0.50;
