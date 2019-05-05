@@ -44,7 +44,7 @@ var Player = function (game, id) {
     this.diry = 0;
   
 
-    this.type = Math.floor(Math.random() * 4);
+    this.type = Math.floor((Math.random() * 3));
     
     this.health = 100;
     this.coins = 0;
@@ -93,8 +93,8 @@ game.update();
 const updateInterval = setInterval(() => {
 
   io.sockets.emit('PLAYERS_UPDATE', game.players.map(player => ({
-    name: player.name,
     id: player.id,
+    name: player.name,
     x: player.x,
     y: player.y,
     type: player.type 
@@ -107,14 +107,14 @@ io.on('connection', function (socket) {
   
   game.addPlayer(socket.id);
   
-  console.log("Number of players: " + game.players.length);
+  //console.log("Number of players: " + game.players.length);
 
   socket.on('disconnect', function () {
     // socket.emit('disconnected');
     game.players = game.players.filter(player => player.id !==  socket.id);
   
     console.log("User DİSconnected!" + socket.id);
-    console.log("Number of players: " + game.players.length);
+    //console.log("Number of players: " + game.players.length);
   });
 
 
@@ -130,8 +130,10 @@ io.on('connection', function (socket) {
    socket.on('PLAYER_NAME_UPDATE', function (data) {
     const player = game.players.filter(player => player.id ===  socket.id);
     
-    player[0].name = data.name;
-
+    if (data.name !== undefined) {
+      player[0].name = data.name;
+    }
+    
    });
 
   // socket.emit('news', { hello: 'world' });

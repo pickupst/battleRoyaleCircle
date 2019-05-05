@@ -55,7 +55,7 @@ class Game {
     
     this.images = {
       tiles: {},
-      users: {}
+      users: {},
     };
 
     this.layers = [
@@ -238,7 +238,7 @@ class App extends Component {
 
       CURRENT_STEP: '',
       isGameRunning: false,
-
+      
 
     };
 
@@ -250,6 +250,7 @@ class App extends Component {
     
     var socket = io('http://localhost:5000');
 
+    console.log("İSİM: " + this.state.name);
     socket.emit('PLAYER_NAME_UPDATE', {name: this.state.name});
 
 
@@ -286,7 +287,7 @@ class App extends Component {
         
         {!this.state.isGameRunning ? (
           <div>
-            <input type = 'text' onChange = {(evt) => this.setState({name: evt.target.value.substring(0, 6).toLocaleLowerCase})}/>
+            <input type = 'text' onChange = {(evt) => this.setState({name: evt.target.value.substring(0, 6)})} />
             <button disabled = {!this.state.name} onClick ={this.start}> START! </button>
           </div>
         ) : (null)};
